@@ -1,0 +1,77 @@
+def validate_time_input(reservation_time):
+    reservation_time_lower = reservation_time.lower()
+    if "am" not in reservation_time_lower and "pm" not in reservation_time_lower:
+        return False
+    else:
+        return True
+
+def book_table(restaurant, table_number, reservation_time, num_people):
+    if table_number in restaurant:
+        if reservation_time in restaurant[table_number]:
+            print("Sorry, this table is already booked for the specified time.")
+            return False
+    return True
+
+def display_reservations(restaurant):
+    if not restaurant:
+        print("No reservations have been made yet.")
+    else:
+        print("Current reservations:")
+        for table_number, reservation_info in restaurant.items():
+            for time, num_people in reservation_info:
+                print(f"Table {table_number} - {time}, {num_people} people")
+
+def main():
+    restaurant_name = input("Enter the name of the restaurant: ")
+    print(f"Welcome to {restaurant_name} table reservation system!")
+    restaurant = {table: [] for table in range(1, 11)}  
+    while True:
+        print("\n1. Book Table")
+        print("2. Display Reservations")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            while True:
+                try:
+                    num_people = int(input("Enter the number of people: "))
+                    if num_people <= 0 or num_people > 15:
+                        raise ValueError
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a positive integer less than or equal to 15 for the number of people.")
+            
+            while True:
+                try:
+                    table_number = int(input("Enter table number (1-10): "))
+                    if table_number not in range(1, 11):
+                        raise ValueError
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a number between 1 and 10 for the table number.")
+            
+            while True:
+                reservation_time = input("Enter reservation time (AM/PM): ")
+                if not validate_time_input(reservation_time):
+                    print("Invalid time format. Please include AM or PM.")
+                else:
+                    break
+            
+            if book_table(restaurant, table_number, reservation_time, num_people):
+                restaurant[table_number].append((reservation_time, num_people))
+                print(f"Table {table_number} has been successfully booked for {num_people} people at {reservation_time}.")
+            else:
+                print("Please try again with a different table or time.")
+        
+        elif choice == "2":
+            display_reservations(restaurant)
+        
+        elif choice == "3":
+            print("Exiting program...")
+            break
+        
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
