@@ -1,0 +1,17 @@
+num_inputs = int(input("How many integer inputs? "))
+
+inputs = []
+
+for i in range(num_inputs):
+    input_num = int(input(f"Enter integer {i + 1}: "))
+    inputs.append(input_num)
+
+average = sum(inputs) / num_inputs
+total_sum = sum(inputs)
+sorted_inputs = sorted(inputs)
+reversed_inputs = list(reversed(inputs))
+
+print(f"Average of all inputs: {average}")
+print(f"Sum of all inputs: {total_sum}")
+print(f"Sorted inputs: {sorted_inputs}")
+print(f"Reverse of all inputs: {reversed_inputs}")
