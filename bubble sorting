@@ -1,0 +1,24 @@
+numbers = []
+
+print("Let's sort some numbers!")
+for i in range(10):
+    num = float(input(f"Give me number {i+1}: "))
+    numbers.append(num)
+
+n = len(numbers)
+for i in range(n-1):
+    for j in range(0, n-i-1):
+        if numbers[j] > numbers[j+1]:
+            numbers[j], numbers[j+1] = numbers[j+1], numbers[j]
+
+print("\nHere's what we got after sorting:")
+print(numbers)
+
+min_num = min(numbers)
+max_num = max(numbers)
+sum_num = sum(numbers)
+print("\nHere's the summary")
+print(f"Minimum number: {min_num}")
+print(f"Maximum number: {max_num}")
+print(f"Total sum: {sum_num}")
+
