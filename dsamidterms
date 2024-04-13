@@ -1,0 +1,24 @@
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+
+def main():
+    try:
+        num_inputs = int(input("Yo, how many numbers you wanna toss in? "))
+        inputs = []
+        for i in range(num_inputs):
+            value = int(input("Hit me with a number: "))
+            inputs.append(value)
+
+        print("Alright, here's your numbers before we sort 'em:", ", ".join(map(str, inputs)))
+        
+        bubble_sort(inputs)
+
+        print("Sorted 'em out for ya: ", ", ".join(map(str, inputs)))
+    except ValueError:
+        print("Bruh, that ain't a number. Try again.")
+
+main()
