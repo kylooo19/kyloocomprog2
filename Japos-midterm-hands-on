@@ -1,0 +1,28 @@
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+
+def main():
+    """
+    Main function to prompt the user for input, sort it, and display the results.
+    """
+    try:
+        num_inputs = int(input("Please enter the number of inputs: "))
+        inputs = []
+        for i in range(num_inputs):
+            value = int(input("Enter input {}: ".format(i+1)))
+            inputs.append(value)
+
+        print("Unsorted list:", ", ".join(map(str, inputs)))
+        
+        bubble_sort(inputs)
+
+        print("Sorted list:", ", ".join(map(str, inputs)))
+    except ValueError:
+        print("Invalid input. Please enter a valid integer.")
+
+if __name__ == "__main__":
+    main()
