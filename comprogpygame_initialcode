@@ -2,15 +2,12 @@ import pygame
 import sys
 import random
 
-# Initialize Pygame
 pygame.init()
 
-# Screen settings
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Flag Identification Game")
 
-# Load flag images
 flags = {
     "France": "assets/flags/france.png",
     "Germany": "assets/flags/germany.png",
@@ -19,13 +16,11 @@ flags = {
     "USA": "assets/flags/usa.png"
 }
 
-# Function to load and resize an image
 def load_image(path):
     image = pygame.image.load(path)
     max_width, max_height = 300, 200  # Maximum size of the flag
     return pygame.transform.scale(image, (max_width, max_height))
 
-# Button class
 class Button():
     def __init__(self, image, pos, text_input, font, base_color, hovering_color):
         self.image = image
@@ -56,7 +51,6 @@ class Button():
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
 
-# Function to get a random flag and choices
 def get_flag_and_choices():
     correct_country = random.choice(list(flags.keys()))
     wrong_country = random.choice(list(flags.keys()))
@@ -64,26 +58,23 @@ def get_flag_and_choices():
         wrong_country = random.choice(list(flags.keys()))
     return correct_country, wrong_country
 
-# Function to get the font
 def get_font(size):
     return pygame.font.Font(None, size)
 
-# Main game loop
 def main_game():
-    score = 0
-    total_flags = len(flags)
-    while True:
-        correct_country, wrong_country = get_flag_and_choices()
-        flag_image = load_image(flags[correct_country])
-
+    flag_list = list(flags.items())  # Convert dictionary items to a list of tuples
+    random.shuffle(flag_list)  # Shuffle the list to randomize the order of flags
+    total_flags = len(flag_list)
+    for flag_name, flag_path in flag_list:
+        flag_image = load_image(flag_path)
         flag_rect = flag_image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
 
         BUTTON_FONT = get_font(30)
 
         correct_button = Button(image=None, pos=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 1.5), 
-                                text_input=correct_country, font=BUTTON_FONT, base_color="White", hovering_color="Green")
+                                text_input=flag_name, font=BUTTON_FONT, base_color="White", hovering_color="Green")
         wrong_button = Button(image=None, pos=(SCREEN_WIDTH * 3 // 4, SCREEN_HEIGHT // 1.5), 
-                              text_input=wrong_country, font=BUTTON_FONT, base_color="White", hovering_color="Red")
+                              text_input=random.choice(list(flags.keys())), font=BUTTON_FONT, base_color="White", hovering_color="Red")
 
         answered = False
         while not answered:
@@ -104,30 +95,14 @@ def main_game():
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if correct_button.checkForInput(MOUSE_POS):
-                        score += 1
-                        correct_text = BUTTON_FONT.render("Correct!", True, (0, 255, 0))
-                        SCREEN.blit(correct_text, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-                        pygame.display.update()
-                        pygame.time.delay(1000)  # Delay for 1 second
+                        print("Correct!")
                         answered = True
-                        if score == total_flags:
-                            end_text = BUTTON_FONT.render("All flags answered! Score: {}/{}".format(score, total_flags), True, (255, 255, 255))
-                            SCREEN.blit(end_text, (SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2))
-                            pygame.display.update()
-                            pygame.time.delay(2000)  # Delay for 2 seconds
-                            play_again = input("Do you want to play again? (yes/no): ")
-                            if play_again.lower() == "no":
-                                pygame.quit()
-                                sys.exit()
-                            else:
-                                main_game()
                     if wrong_button.checkForInput(MOUSE_POS):
-                        wrong_text = BUTTON_FONT.render("Wrong! Try again.", True, (255, 0, 0))
-                        SCREEN.blit(wrong_text, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-                        pygame.display.update()
-                        pygame.time.delay(1000)  # Delay for 1 second
-                        break  # Break out of the inner loop to allow the user to choose again
+                        print("Wrong!")
+                        answered = True
 
             pygame.display.update()
+
+    print("All flags displayed!")
 
 main_game()
