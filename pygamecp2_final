@@ -1,0 +1,128 @@
+import pygame
+import sys
+import random
+
+pygame.init()
+
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Flag Identification Game")
+
+flags = {
+    "France": "assets/flags/france.png",
+    "Germany": "assets/flags/germany.png",
+    "Italy": "assets/flags/italy.png",
+    "Spain": "assets/flags/spain.png",
+    "USA": "assets/flags/usa.png"
+}
+
+def load_image(path):
+    image = pygame.image.load(path)
+    max_width, max_height = 300, 200  # Maximum size of the flag
+    return pygame.transform.scale(image, (max_width, max_height))
+
+class Button():
+    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+        self.image = image
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
+        self.font = font
+        self.base_color, self.hovering_color = base_color, hovering_color
+        self.text_input = text_input
+        self.text = self.font.render(self.text_input, True, self.base_color)
+        if self.image is None:
+            self.image = self.text
+        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+    def update(self, screen):
+        if self.image is not None:
+            screen.blit(self.image, self.rect)
+        screen.blit(self.text, self.text_rect)
+
+    def checkForInput(self, position):
+        if self.rect.collidepoint(position):
+            return True
+        return False
+
+    def changeColor(self, position):
+        if self.rect.collidepoint(position):
+            self.text = self.font.render(self.text_input, True, self.hovering_color)
+        else:
+            self.text = self.font.render(self.text_input, True, self.base_color)
+
+def get_fixed_choices(flag):
+    choices = {
+        "France": ["France", "Germany"],
+        "Germany": ["Germany", "Italy"],
+        "Italy": ["Italy", "Spain"],
+        "Spain": ["Spain", "USA"],
+        "USA": ["USA", "France"]
+    }
+    options = choices[flag]
+    random.shuffle(options)
+    return options
+
+def get_font(size):
+    return pygame.font.Font(None, size)
+
+def main_game():
+    flag_list = list(flags.items())  # Convert dictionary items to a list of tuples
+    random.shuffle(flag_list)  # Shuffle the list to randomize the order of flags
+    correct_answers = 0
+    wrong_answers = 0
+
+    for flag_name, flag_path in flag_list:
+        flag_image = load_image(flag_path)
+        flag_rect = flag_image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
+
+        BUTTON_FONT = get_font(30)
+
+        options = get_fixed_choices(flag_name)
+
+        buttons = [
+            Button(image=None, pos=(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 1.5), 
+                   text_input=options[0], font=BUTTON_FONT, base_color="White", hovering_color="Green" if options[0] == flag_name else "Red"),
+            Button(image=None, pos=(2 * SCREEN_WIDTH // 3, SCREEN_HEIGHT // 1.5), 
+                   text_input=options[1], font=BUTTON_FONT, base_color="White", hovering_color="Green" if options[1] == flag_name else "Red")
+        ]
+
+        answered = False
+        while not answered:
+            SCREEN.fill((30, 30, 30))
+            SCREEN.blit(flag_image, flag_rect)
+
+            MOUSE_POS = pygame.mouse.get_pos()
+
+            for button in buttons:
+                button.changeColor(MOUSE_POS)
+                button.update(SCREEN)
+
+            correct_text = BUTTON_FONT.render("Correct: {}".format(correct_answers), True, (0, 255, 0))
+            wrong_text = BUTTON_FONT.render("Wrong: {}".format(wrong_answers), True, (255, 0, 0))
+            correct_text_rect = correct_text.get_rect(center=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 10))
+            wrong_text_rect = wrong_text.get_rect(center=(3 * SCREEN_WIDTH // 4, SCREEN_HEIGHT // 10))
+            SCREEN.blit(correct_text, correct_text_rect)
+            SCREEN.blit(wrong_text, wrong_text_rect)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    for button in buttons:
+                        if button.checkForInput(MOUSE_POS):
+                            if button.text_input == flag_name:
+                                correct_answers += 1
+                            else:
+                                wrong_answers += 1
+                            answered = True
+                            break
+
+            pygame.display.update()
+
+    print("All flags displayed!")
+    print("Correct Answers:", correct_answers)
+    print("Wrong Answers:", wrong_answers)
+
+main_game()
